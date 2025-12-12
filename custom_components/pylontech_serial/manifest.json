@@ -6,6 +6,14 @@
   "dependencies": [],
   "documentation": "https://github.com/arnyminerz/pylon-integration",
   "iot_class": "local_polling",
-  "requirements": ["pyserial==3.5"],
+  "requirements": [
+    "pyserial==3.5"
+  ],
+  "usb": [
+    {
+      "vid": "067B",
+      "pid": "2303"
+    }
+  ],
   "version": "1.0.0"
 }
