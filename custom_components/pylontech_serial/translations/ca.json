@@ -24,6 +24,20 @@
             }
         }
     },
+    "options": {
+        "step": {
+            "user": {
+                "data": {
+                    "baud_rate": "Taxa de Baud",
+                    "battery_capacity": "Capacitat de la Bateria per Mòdul (kWh)",
+                    "poll_interval": "Interval d'actualització (segons)",
+                    "serial_port": "Port Sèrie"
+                },
+                "description": "Actualitza la configuració per a Pylontech Sèrie.",
+                "title": "Configura Pylontech Sèrie"
+            }
+        }
+    },
     "entity": {
         "sensor": {
             "sys_cycles": {

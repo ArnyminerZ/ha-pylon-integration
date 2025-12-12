@@ -24,6 +24,20 @@
             }
         }
     },
+    "options": {
+        "step": {
+            "user": {
+                "data": {
+                    "baud_rate": "Baud Rate",
+                    "battery_capacity": "Battery Capacity per Module (kWh)",
+                    "poll_interval": "Poll Interval (seconds)",
+                    "serial_port": "Serial Port"
+                },
+                "description": "Update configuration for Pylontech Serial.",
+                "title": "Configure Pylontech Serial"
+            }
+        }
+    },
     "entity": {
         "sensor": {
             "sys_cycles": {

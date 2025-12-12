@@ -16,10 +16,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Pylontech Serial from a config entry."""
     hass.data.setdefault(DOMAIN, {})
 
-    port = entry.data[CONF_SERIAL_PORT]
-    baud = entry.data[CONF_BAUD_RATE]
-    interval = entry.data[CONF_POLL_INTERVAL]
-    capacity = entry.data.get(CONF_BATTERY_CAPACITY, 2.4) # Fallback if missing from old config
+    port = entry.options.get(CONF_SERIAL_PORT, entry.data.get(CONF_SERIAL_PORT))
+    baud = entry.options.get(CONF_BAUD_RATE, entry.data.get(CONF_BAUD_RATE))
+    interval = entry.options.get(CONF_POLL_INTERVAL, entry.data.get(CONF_POLL_INTERVAL))
+    # Battery capacity might be in data (old) or options (new)
+    capacity = entry.options.get(CONF_BATTERY_CAPACITY, entry.data.get(CONF_BATTERY_CAPACITY, 2.4))
 
     coordinator = PylontechCoordinator(hass, port, baud, interval, capacity)
 
@@ -29,8 +30,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
     return True
+
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload config entry."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
