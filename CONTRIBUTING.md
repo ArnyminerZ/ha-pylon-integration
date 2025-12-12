@@ -1,6 +1,6 @@
 # Contributing to Pylontech Serial Integration
 
-Thank you for your interest in contributing! This guide primarily focuses on adding support for new USB-to-Serial adapters for auto-discovery.
+Thank you for your interest in contributing! This guide covers adding support for new USB devices and translating the integration into other languages.
 
 ## Adding Support for New USB Devices
 
@@ -40,6 +40,35 @@ You need to find the **Vendor ID (VID)** and **Product ID (PID)** of your USB ad
   ],
 ```
 
-### 3. Submit a Pull Request
+## Adding Translations
 
-Create a Pull Request with your changes. Please include the output of `lsusb` or the device model name in your PR description so we can verify it.
+We welcome translations to make this integration accessible to everyone!
+
+1. **Locate the Translations**: Go to `custom_components/pylontech_serial/translations/`.
+2. **Create your Language File**:
+    - Find the English file: `en.json`.
+    - Copy it and name the new file with your language's ISO 639-1 code (e.g., `es.json` for Spanish, `fr.json` for French, `de.json` for German).
+3. **Translate**:
+    - Open your new file (e.g., `es.json`).
+    - Translate the values on the right side of the colon. **Do not change the keys** (the text on the left).
+
+   **Example (`es.json`):**
+   ```json
+   {
+     "config": {
+       "step": {
+         "user": {
+           "data": {
+             "serial_port": "Puerto Serie"
+           }
+         }
+       }
+     }
+   }
+   ```
+
+## Submitting a Pull Request
+
+1. Create a Pull Request with your changes.
+2. If adding a device, include the `lsusb` output.
+3. If adding a translation, mention the language you are adding.

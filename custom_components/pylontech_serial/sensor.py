@@ -29,57 +29,59 @@ async def async_setup_entry(
     
     # --- System Sensors ---
     # Voltage
+    # --- System Sensors ---
+    # Voltage
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_volt", "System Voltage", 
+        coordinator, unique_id_prefix, "sys_volt", 
         UnitOfElectricPotential.VOLT, SensorDeviceClass.VOLTAGE, "voltage"
     ))
     # Current
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_curr", "System Current", 
+        coordinator, unique_id_prefix, "sys_curr", 
         UnitOfElectricCurrent.AMPERE, SensorDeviceClass.CURRENT, "current"
     ))
     # SOC
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_soc", "System SOC", 
+        coordinator, unique_id_prefix, "sys_soc", 
         PERCENTAGE, SensorDeviceClass.BATTERY, "soc"
     ))
     # Power (Required for dashboard optional graphs)
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_power", "System Power", 
+        coordinator, unique_id_prefix, "sys_power", 
         UnitOfPower.WATT, SensorDeviceClass.POWER, "power"
     ))
 
     # Energy In (Charge) - For Dashboard "Battery Charged"
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_energy_in", "System Energy Charged", 
+        coordinator, unique_id_prefix, "sys_energy_in", 
         UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY, "energy_in",
         state_class=SensorStateClass.TOTAL_INCREASING
     ))
     
     # Energy Out (Discharge) - For Dashboard "Battery Discharged"
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_energy_out", "System Energy Discharged", 
+        coordinator, unique_id_prefix, "sys_energy_out", 
         UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY, "energy_out",
         state_class=SensorStateClass.TOTAL_INCREASING
     ))
 
     # Stored Energy (Capacity)
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_energy_stored", "System Stored Energy", 
+        coordinator, unique_id_prefix, "sys_energy_stored", 
         UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY_STORAGE, "energy_stored",
         state_class=SensorStateClass.MEASUREMENT
     ))
 
     # SOH (System Average)
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_soh", "System SOH", 
+        coordinator, unique_id_prefix, "sys_soh", 
         PERCENTAGE, SensorDeviceClass.BATTERY, "soh",
         state_class=SensorStateClass.MEASUREMENT
     ))
 
     # Cycle Count (System Average)
     entities.append(PylontechSystemSensor(
-        coordinator, unique_id_prefix, "sys_cycles", "System Cycles", 
+        coordinator, unique_id_prefix, "sys_cycles", 
         None, None, "cycles",
         state_class=SensorStateClass.MEASUREMENT
     ))
@@ -92,42 +94,42 @@ async def async_setup_entry(
             bat_id = bat["id"]
             # Voltage
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "volt", "Voltage", 
+                 coordinator, unique_id_prefix, bat_id, "volt", 
                  UnitOfElectricPotential.VOLT, SensorDeviceClass.VOLTAGE, "voltage"
             ))
             # Current
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "curr", "Current", 
+                 coordinator, unique_id_prefix, bat_id, "curr", 
                  UnitOfElectricCurrent.AMPERE, SensorDeviceClass.CURRENT, "current"
             ))
             # Temp
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "temp", "Temperature", 
+                 coordinator, unique_id_prefix, bat_id, "temp", 
                  UnitOfTemperature.CELSIUS, SensorDeviceClass.TEMPERATURE, "temp"
             ))
             # SOC
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "soc", "SOC", 
+                 coordinator, unique_id_prefix, bat_id, "soc", 
                  PERCENTAGE, SensorDeviceClass.BATTERY, "soc"
             ))
             # SOH
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "soh", "SOH", 
+                 coordinator, unique_id_prefix, bat_id, "soh", 
                  PERCENTAGE, SensorDeviceClass.BATTERY, "soh"
             ))
             # Cycles
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "cycles", "Cycles", 
+                 coordinator, unique_id_prefix, bat_id, "cycles", 
                  None, None, "cycles"
             ))
             # Power
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "power", "Power", 
+                 coordinator, unique_id_prefix, bat_id, "power", 
                  UnitOfPower.WATT, SensorDeviceClass.POWER, "power"
             ))
             # Status (Text)
             entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "status", "Status", 
+                 coordinator, unique_id_prefix, bat_id, "status", 
                  None, None, "status"
             ))
 
@@ -137,17 +139,18 @@ async def async_setup_entry(
 class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
     """Representation of a System-wide Sensor."""
 
-    def __init__(self, coordinator, unique_id_prefix, key, name, unit, device_class, json_key, state_class=None):
+    _attr_has_entity_name = True
+
+    def __init__(self, coordinator, unique_id_prefix, key, unit, device_class, json_key, state_class=None):
         super().__init__(coordinator)
         self._key = key
-        self._name = name
         self._unit = unit
         self._device_class = device_class
         self._json_key = json_key
         self._attr_state_class = state_class
         
         self._attr_unique_id = f"{unique_id_prefix}_{key}"
-        self._attr_name = name
+        self._attr_translation_key = key
         
         # Default Info
         dev_info = {
@@ -185,7 +188,9 @@ class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
 class PylontechBatterySensor(CoordinatorEntity, SensorEntity):
     """Representation of a Per-Battery Sensor."""
 
-    def __init__(self, coordinator, unique_id_prefix, bat_id, suffix, name_suffix, unit, device_class, json_key):
+    _attr_has_entity_name = True
+
+    def __init__(self, coordinator, unique_id_prefix, bat_id, suffix, unit, device_class, json_key):
         super().__init__(coordinator)
         self._bat_id = bat_id
         self._json_key = json_key
@@ -193,7 +198,7 @@ class PylontechBatterySensor(CoordinatorEntity, SensorEntity):
         self._device_class = device_class
         
         self._attr_unique_id = f"{unique_id_prefix}_bat{bat_id}_{suffix}"
-        self._attr_name = f"Battery {bat_id} {name_suffix}"
+        self._attr_translation_key = f"bat_{suffix}"
         
         self._attr_device_info = {
             "identifiers": {(DOMAIN, f"battery_{bat_id}")},

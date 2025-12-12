@@ -1,0 +1,82 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "El dispositiu ja està configurat"
+        },
+        "error": {
+            "cannot_connect": "No s'ha pogut connectar",
+            "unknown": "Error inesperat"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "baud_rate": "Taxa de Baud",
+                    "battery_capacity": "Capacitat de la Bateria per Mòdul (kWh)",
+                    "poll_interval": "Interval d'actualització (segons)",
+                    "serial_port": "Port Sèrie"
+                },
+                "description": "Configura la connexió sèrie amb el teu conjunt de bateries Pylontech.",
+                "title": "Pylontech Sèrie"
+            },
+            "usb": {
+                "description": "S'ha descobert un dispositiu Pylontech Sèrie.",
+                "title": "Descobriment Pylontech Sèrie"
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "sys_cycles": {
+                "name": "Cicles"
+            },
+            "sys_curr": {
+                "name": "Corrent"
+            },
+            "sys_energy_in": {
+                "name": "Energia Carregada"
+            },
+            "sys_energy_out": {
+                "name": "Energia Descarregada"
+            },
+            "sys_energy_stored": {
+                "name": "Energia Emmagatzemada"
+            },
+            "sys_power": {
+                "name": "Potència"
+            },
+            "sys_soc": {
+                "name": "SOC"
+            },
+            "sys_soh": {
+                "name": "SOH"
+            },
+            "sys_volt": {
+                "name": "Voltatge"
+            },
+            "bat_cycles": {
+                "name": "Cicles"
+            },
+            "bat_curr": {
+                "name": "Corrent"
+            },
+            "bat_power": {
+                "name": "Potència"
+            },
+            "bat_soc": {
+                "name": "SOC"
+            },
+            "bat_soh": {
+                "name": "SOH"
+            },
+            "bat_status": {
+                "name": "Estat"
+            },
+            "bat_temp": {
+                "name": "Temperatura"
+            },
+            "bat_volt": {
+                "name": "Voltatge"
+            }
+        }
+    }
+}

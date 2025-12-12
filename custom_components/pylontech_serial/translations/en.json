@@ -1,0 +1,82 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Device is already configured"
+        },
+        "error": {
+            "cannot_connect": "Failed to connect",
+            "unknown": "Unexpected error"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "baud_rate": "Baud Rate",
+                    "battery_capacity": "Battery Capacity per Module (kWh)",
+                    "poll_interval": "Poll Interval (seconds)",
+                    "serial_port": "Serial Port"
+                },
+                "description": "Configure the serial connection to your Pylontech battery stack.",
+                "title": "Pylontech Serial"
+            },
+            "usb": {
+                "description": "Discovered Pylontech Serial device.",
+                "title": "Pylontech Serial Discovery"
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "sys_cycles": {
+                "name": "Cycles"
+            },
+            "sys_curr": {
+                "name": "Current"
+            },
+            "sys_energy_in": {
+                "name": "Energy Charged"
+            },
+            "sys_energy_out": {
+                "name": "Energy Discharged"
+            },
+            "sys_energy_stored": {
+                "name": "Stored Energy"
+            },
+            "sys_power": {
+                "name": "Power"
+            },
+            "sys_soc": {
+                "name": "SOC"
+            },
+            "sys_soh": {
+                "name": "SOH"
+            },
+            "sys_volt": {
+                "name": "Voltage"
+            },
+            "bat_cycles": {
+                "name": "Cycles"
+            },
+            "bat_curr": {
+                "name": "Current"
+            },
+            "bat_power": {
+                "name": "Power"
+            },
+            "bat_soc": {
+                "name": "SOC"
+            },
+            "bat_soh": {
+                "name": "SOH"
+            },
+            "bat_status": {
+                "name": "Status"
+            },
+            "bat_temp": {
+                "name": "Temperature"
+            },
+            "bat_volt": {
+                "name": "Voltage"
+            }
+        }
+    }
+}
