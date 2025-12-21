@@ -138,6 +138,17 @@ class PylontechParser:
         return system
 
     @staticmethod
+    def parse_time(raw_text: str, system: PylontechSystem) -> PylontechSystem:
+        """Parses 'time' command output.
+        Example: Ds3231 2025-12-21 21:14:53
+        """
+        # Look for YYYY-MM-DD HH:MM:SS pattern
+        match = re.search(r"(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2})", raw_text)
+        if match:
+             system.bms_time = match.group(1)
+        return system
+
+    @staticmethod
     def generate_time_command(timestamp: datetime) -> str:
         """Generates the 'time' command for specific datetime."""
         # time [year] [month] [day] [hour] [minute] [second]

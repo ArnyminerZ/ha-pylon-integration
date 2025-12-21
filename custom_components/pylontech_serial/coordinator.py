@@ -131,6 +131,12 @@ class PylontechCoordinator(DataUpdateCoordinator):
                 time.sleep(1.0)
                 raw_data_stat = self.serial.read_all().decode('ascii', errors='ignore')
 
+                # 3. TIME
+                _LOGGER.debug("Sending 'time' command")
+                self.serial.write(b"time\n")
+                time.sleep(0.5)
+                raw_data_time = self.serial.read_all().decode('ascii', errors='ignore')
+
                 # Prepare System Object
                 # Reuse existing if possible to keep energy counters? 
                 # Actually energy counters are stored in self.system_energy_in/out variables in init.
@@ -162,6 +168,7 @@ class PylontechCoordinator(DataUpdateCoordinator):
                 # Parse
                 PylontechParser.parse_pwr(raw_data_pwr, system)
                 PylontechParser.parse_stat(raw_data_stat, system)
+                PylontechParser.parse_time(raw_data_time, system)
                 
                 # Update Energy Integration
                 self._update_energy(system)

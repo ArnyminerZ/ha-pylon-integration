@@ -31,6 +31,9 @@ class PylontechSystem:
     manufacturer: Optional[str] = None
     model: Optional[str] = None
     
+    # Time Command Data
+    bms_time: Optional[str] = None
+    
     # Stat Command Data
     cycles: Optional[int] = None
     soh: Optional[int] = None # System average or from stack stat

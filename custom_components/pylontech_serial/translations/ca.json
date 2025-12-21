@@ -70,6 +70,9 @@
             "sys_barcode": {
                 "name": "Codi de Barres"
             },
+            "sys_bms_time": {
+                "name": "Hora BMS"
+            },
             "sys_raw": {
                 "name": "Dades en Brut"
             },

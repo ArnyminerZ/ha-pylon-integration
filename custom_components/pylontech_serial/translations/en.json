@@ -70,6 +70,9 @@
             "sys_barcode": {
                 "name": "Barcode"
             },
+            "sys_bms_time": {
+                "name": "BMS Time"
+            },
             "sys_raw": {
                 "name": "Raw Data"
             },

@@ -94,6 +94,7 @@ async def async_setup_entry(
     entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_fw_version", None, None, "fw_version", entity_category=EntityCategory.DIAGNOSTIC))
     entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_spec", None, None, "spec", entity_category=EntityCategory.DIAGNOSTIC))
     entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_barcode", None, None, "barcode", entity_category=EntityCategory.DIAGNOSTIC))
+    entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_bms_time", None, None, "bms_time", entity_category=EntityCategory.DIAGNOSTIC))
 
 
     # --- Per Battery Sensors ---

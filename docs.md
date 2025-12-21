@@ -180,3 +180,14 @@ LifeWarn Times  :        0
 LifeAlarm Times :        0
 Command completed successfully
 ```
+
+## `time`
+_Without parameters, returns the current time._
+### Raw:
+```
+\n\rpylon>time\n\r@\r\n\rDs3231 2025-12-21 21:14:53\r\n\rCommand completed successfully\r\n\r$$\r\n\rpylon>
+```
+### Clean:
+```
+Ds3231 2025-12-21 21:14:53
+```
