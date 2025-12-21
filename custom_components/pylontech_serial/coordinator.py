@@ -3,6 +3,7 @@ import asyncio
 import logging
 import serial
 import time
+import threading
 from datetime import datetime, timedelta
 import re
 
@@ -35,6 +36,7 @@ class PylontechCoordinator(DataUpdateCoordinator):
             name=DOMAIN,
             update_interval=timedelta(seconds=poll_interval),
         )
+        self._lock = threading.Lock()
 
     def _open_serial(self):
         if self.serial is None:
@@ -56,110 +58,111 @@ class PylontechCoordinator(DataUpdateCoordinator):
 
     def _read_info_data(self):
         """Read device info (firmware, serial) once."""
-        try:
-            self._open_serial()
-            self.serial.reset_input_buffer()
-            self.serial.write(b"\n")
-            time.sleep(0.1)
-            self.serial.read_all()
+        with self._lock:
+            try:
+                self._open_serial()
+                self.serial.reset_input_buffer()
+                self.serial.write(b"\n")
+                time.sleep(0.1)
+                self.serial.read_all()
 
-            _LOGGER.debug("Sending 'info' command")
-            self.serial.write(b"info\n")
-            time.sleep(1.0)
-            
-            raw_data = self.serial.read_all().decode('ascii', errors='ignore')
-            raw_data = self.serial.read_all().decode('ascii', errors='ignore')
+                _LOGGER.debug("Sending 'info' command")
+                self.serial.write(b"info\n")
+                time.sleep(1.0)
+                
+                raw_data = self.serial.read_all().decode('ascii', errors='ignore')
 
-            # Parse info
-            # Output format varies, but usually contains:
-            # Device: ...
-            # Version: ...
-            # Serial: ...
-            # or just unstructured text
-            
-            lines = raw_data.splitlines()
-            info = {}
-            for line in lines:
-                if ":" in line:
-                    parts = line.split(":", 1)
-                    key = parts[0].strip().lower()
-                    val = parts[1].strip()
-                    if "ver" in key: info["sw_version"] = val
-                    if "serial" in key or "barcode" in key: info["serial_number"] = val
-                    if "device" in key: info["model"] = val
-            
-            self.device_info = info
-            _LOGGER.info(f"Parsed device info: {self.device_info}")
+                # Parse info
+                # Output format varies, but usually contains:
+                # Device: ...
+                # Version: ...
+                # Serial: ...
+                # or just unstructured text
+                
+                lines = raw_data.splitlines()
+                info = {}
+                for line in lines:
+                    if ":" in line:
+                        parts = line.split(":", 1)
+                        key = parts[0].strip().lower()
+                        val = parts[1].strip()
+                        if "ver" in key: info["sw_version"] = val
+                        if "serial" in key or "barcode" in key: info["serial_number"] = val
+                        if "device" in key: info["model"] = val
+                
+                self.device_info = info
+                _LOGGER.info(f"Parsed device info: {self.device_info}")
 
-        except Exception as e:
-            _LOGGER.warning(f"Failed to fetch device info: {e}")
-            # Don't fail the main update, just log
+            except Exception as e:
+                _LOGGER.warning(f"Failed to fetch device info: {e}")
+                # Don't fail the main update, just log
 
     def _read_full_data(self):
         """Read data from serial synchronously."""
-        try:
-            self._open_serial()
-            
-            # Flush junk
-            self.serial.reset_input_buffer()
-            self.serial.write(b"\n")
-            time.sleep(0.1)
-            self.serial.read_all()
-
-            # Send command
-            _LOGGER.debug("Sending 'pwr' command")
-            self.serial.write(b"pwr\n")
-            time.sleep(1.0) # Wait for response
-            
-            raw_data_pwr = self.serial.read_all().decode('ascii', errors='ignore')
-            _LOGGER.debug(f"Received pwr data: {raw_data_pwr[:100]}...") # Log first 100 chars
-            
-            if "Power Volt" not in raw_data_pwr:
-                # Try once more?
-                _LOGGER.warning("Invalid response for 'pwr', retrying...")
-                time.sleep(1.0)
-                raw_data_pwr = self.serial.read_all().decode('ascii', errors='ignore')
-            
-            if "Power Volt" not in raw_data_pwr:
-                 raise UpdateFailed("Did not receive valid 'pwr' response header.")
-
-            # Send STAT command (since soh command was returning cell voltages and help confirmed stat exists)
-            _LOGGER.debug("Sending 'stat' command for SOH/Cycles")
-            self.serial.write(b"stat\n")
-            time.sleep(1.0) # Wait for response
-            
-            raw_data_stat = self.serial.read_all().decode('ascii', errors='ignore')
-            # _LOGGER.warning(f"DEBUG: Received stat raw data:\n{raw_data_stat}") # Keep warning for verification if needed, or downgrade to debug
-
-            data = self._parse_pwr_response(raw_data_pwr)
-            data["system"]["raw"] = raw_data_pwr # Store full raw response
-            stat_map = self._parse_stat_response(raw_data_stat)
-            
-            # Merge STAT data (SOH, Cycles)
-            if stat_map:
-                for bat in data["batteries"]:
-                    bat_id = bat["id"]
-                    if bat_id in stat_map:
-                        bat_data = stat_map[bat_id]
-                        if "soh" in bat_data: bat["soh"] = bat_data["soh"]
-                        if "cycles" in bat_data: bat["cycles"] = bat_data["cycles"]
+        with self._lock:
+            try:
+                self._open_serial()
                 
-                # Recalculate System SOH
-                soh_values = [b.get("soh") for b in data["batteries"] if b.get("soh") is not None]
-                if soh_values:
-                    data["system"]["soh"] = round(sum(soh_values) / len(soh_values), 1)
+                # Flush junk
+                self.serial.reset_input_buffer()
+                self.serial.write(b"\n")
+                time.sleep(0.1)
+                self.serial.read_all()
+
+                # Send command
+                _LOGGER.debug("Sending 'pwr' command")
+                self.serial.write(b"pwr\n")
+                time.sleep(1.0) # Wait for response
+                
+                raw_data_pwr = self.serial.read_all().decode('ascii', errors='ignore')
+                _LOGGER.debug(f"Received pwr data: {raw_data_pwr[:100]}...") # Log first 100 chars
+                
+                if "Power Volt" not in raw_data_pwr:
+                    # Try once more?
+                    _LOGGER.warning("Invalid response for 'pwr', retrying...")
+                    time.sleep(1.0)
+                    raw_data_pwr = self.serial.read_all().decode('ascii', errors='ignore')
+                
+                if "Power Volt" not in raw_data_pwr:
+                     raise UpdateFailed("Did not receive valid 'pwr' response header.")
+
+                # Send STAT command (since soh command was returning cell voltages and help confirmed stat exists)
+                _LOGGER.debug("Sending 'stat' command for SOH/Cycles")
+                self.serial.write(b"stat\n")
+                time.sleep(1.0) # Wait for response
+                
+                raw_data_stat = self.serial.read_all().decode('ascii', errors='ignore')
+                # _LOGGER.warning(f"DEBUG: Received stat raw data:\n{raw_data_stat}") # Keep warning for verification if needed, or downgrade to debug
+
+                data = self._parse_pwr_response(raw_data_pwr)
+                data["system"]["raw"] = raw_data_pwr # Store full raw response
+                stat_map = self._parse_stat_response(raw_data_stat)
+                
+                # Merge STAT data (SOH, Cycles)
+                if stat_map:
+                    for bat in data["batteries"]:
+                        bat_id = bat["id"]
+                        if bat_id in stat_map:
+                            bat_data = stat_map[bat_id]
+                            if "soh" in bat_data: bat["soh"] = bat_data["soh"]
+                            if "cycles" in bat_data: bat["cycles"] = bat_data["cycles"]
                     
-                # Calculate System Cycles (Average? Or Max?)
-                # Usually max or average. Let's do average.
-                cycle_values = [b.get("cycles") for b in data["batteries"] if b.get("cycles") is not None]
-                if cycle_values:
-                    data["system"]["cycles"] = int(sum(cycle_values) / len(cycle_values))
+                    # Recalculate System SOH
+                    soh_values = [b.get("soh") for b in data["batteries"] if b.get("soh") is not None]
+                    if soh_values:
+                        data["system"]["soh"] = round(sum(soh_values) / len(soh_values), 1)
+                        
+                    # Calculate System Cycles (Average? Or Max?)
+                    # Usually max or average. Let's do average.
+                    cycle_values = [b.get("cycles") for b in data["batteries"] if b.get("cycles") is not None]
+                    if cycle_values:
+                        data["system"]["cycles"] = int(sum(cycle_values) / len(cycle_values))
 
-            return data
+                return data
 
-        except Exception as e:
-            self._close_serial()
-            raise UpdateFailed(f"Serial Error: {e}")
+            except Exception as e:
+                self._close_serial()
+                raise UpdateFailed(f"Serial Error: {e}")
 
     def _parse_pwr_response(self, raw_text):
         """Parses the ASCII table from the 'pwr' command."""
@@ -288,3 +291,22 @@ class PylontechCoordinator(DataUpdateCoordinator):
             _LOGGER.error(f"Error parsing STAT: {e}")
             
         return stat_map
+
+    def send_raw_command(self, command: str):
+        """Send a raw command to the BMS and return the response."""
+        with self._lock:
+            try:
+                self._open_serial()
+                self.serial.reset_input_buffer()
+                self.serial.reset_output_buffer()
+                
+                cmd_bytes = command.encode("ascii") + b"\n"
+                _LOGGER.debug(f"Sending raw command: {command}")
+                self.serial.write(cmd_bytes)
+                time.sleep(0.5) # Wait for response
+                
+                response = self.serial.read_all().decode('ascii', errors='ignore')
+                return response
+            except Exception as e:
+                _LOGGER.error(f"Error sending raw command: {e}")
+                raise e
