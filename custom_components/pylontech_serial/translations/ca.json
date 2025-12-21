@@ -58,6 +58,9 @@
             "sys_power": {
                 "name": "Potència"
             },
+            "sys_raw": {
+                "name": "Dades en Brut"
+            },
             "sys_soc": {
                 "name": "SOC"
             },

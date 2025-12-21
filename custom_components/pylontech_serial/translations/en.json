@@ -58,6 +58,9 @@
             "sys_power": {
                 "name": "Power"
             },
+            "sys_raw": {
+                "name": "Raw Data"
+            },
             "sys_soc": {
                 "name": "SOC"
             },

@@ -87,6 +87,13 @@ async def async_setup_entry(
         state_class=SensorStateClass.MEASUREMENT
     ))
 
+    # Raw System Response
+    entities.append(PylontechSystemSensor(
+        coordinator, unique_id_prefix, "sys_raw", 
+        None, None, "raw",
+        entity_category=EntityCategory.DIAGNOSTIC
+    ))
+
 
 
     # --- Per Battery Sensors ---
@@ -148,13 +155,14 @@ class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, unique_id_prefix, key, unit, device_class, json_key, state_class=None):
+    def __init__(self, coordinator, unique_id_prefix, key, unit, device_class, json_key, state_class=None, entity_category=None):
         super().__init__(coordinator)
         self._key = key
         self._unit = unit
         self._device_class = device_class
         self._json_key = json_key
         self._attr_state_class = state_class
+        self._attr_entity_category = entity_category
         
         self._attr_unique_id = f"{unique_id_prefix}_{key}"
         self._attr_translation_key = key

@@ -132,6 +132,7 @@ class PylontechCoordinator(DataUpdateCoordinator):
             # _LOGGER.warning(f"DEBUG: Received stat raw data:\n{raw_data_stat}") # Keep warning for verification if needed, or downgrade to debug
 
             data = self._parse_pwr_response(raw_data_pwr)
+            data["system"]["raw"] = raw_data_pwr # Store full raw response
             stat_map = self._parse_stat_response(raw_data_stat)
             
             # Merge STAT data (SOH, Cycles)
