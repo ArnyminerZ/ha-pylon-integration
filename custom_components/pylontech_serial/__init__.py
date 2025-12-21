@@ -45,8 +45,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # If multiple instances, we might pick the first one from hass.data[DOMAIN]
         
         if not hass.data.get(DOMAIN):
-             raise ValueError("No Pylontech integration found")
-             
+            raise ValueError("No Pylontech integration found")
+        
         # Pick the first coordinator
         entry_id = next(iter(hass.data[DOMAIN]))
         coordinator: PylontechCoordinator = hass.data[DOMAIN][entry_id]
@@ -58,7 +58,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         DOMAIN, 
         "send_command", 
         async_send_command,
-        schema=vol.Schema({vol.Required("command"): cv.string}),
+        schema=vol.Schema({vol.Required("command"): cv.string}, extra=vol.ALLOW_EXTRA),
         supports_response=SupportsResponse.OPTIONAL
     )
 
