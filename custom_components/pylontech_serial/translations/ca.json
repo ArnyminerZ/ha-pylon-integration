@@ -76,6 +76,9 @@
             "bat_power": {
                 "name": "Potència"
             },
+            "bat_raw": {
+                "name": "Dades en Brut"
+            },
             "bat_soc": {
                 "name": "SOC"
             },

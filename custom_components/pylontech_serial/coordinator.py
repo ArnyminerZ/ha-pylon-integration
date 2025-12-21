@@ -187,7 +187,8 @@ class PylontechCoordinator(DataUpdateCoordinator):
                         "temp": temp,
                         "soc": soc,
                         "status": status,
-                        "power": power
+                        "power": power,
+                        "raw": line.strip()
                     })
                 except (ValueError, IndexError) as error:
                    _LOGGER.error(f"Error parsing pwr line '{line}': {error}")

@@ -8,6 +8,7 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfEnergy,
     PERCENTAGE,
+    EntityCategory,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -132,6 +133,12 @@ async def async_setup_entry(
                  coordinator, unique_id_prefix, bat_id, "status", 
                  None, None, "status"
             ))
+            # Raw Response
+            entities.append(PylontechBatterySensor(
+                 coordinator, unique_id_prefix, bat_id, "raw", 
+                 None, None, "raw",
+                 entity_category=EntityCategory.DIAGNOSTIC
+            ))
 
     async_add_entities(entities)
 
@@ -190,7 +197,7 @@ class PylontechBatterySensor(CoordinatorEntity, SensorEntity):
 
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, unique_id_prefix, bat_id, suffix, unit, device_class, json_key):
+    def __init__(self, coordinator, unique_id_prefix, bat_id, suffix, unit, device_class, json_key, entity_category=None):
         super().__init__(coordinator)
         self._bat_id = bat_id
         self._json_key = json_key
@@ -199,6 +206,7 @@ class PylontechBatterySensor(CoordinatorEntity, SensorEntity):
         
         self._attr_unique_id = f"{unique_id_prefix}_bat{bat_id}_{suffix}"
         self._attr_translation_key = f"bat_{suffix}"
+        self._attr_entity_category = entity_category
         
         self._attr_device_info = {
             "identifiers": {(DOMAIN, f"battery_{bat_id}")},

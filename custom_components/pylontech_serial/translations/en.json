@@ -76,6 +76,9 @@
             "bat_power": {
                 "name": "Power"
             },
+            "bat_raw": {
+                "name": "Raw Data"
+            },
             "bat_soc": {
                 "name": "SOC"
             },
