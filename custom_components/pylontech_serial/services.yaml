@@ -8,7 +8,6 @@ send_command:
       required: true
       selector:
         text:
-  response:
-    response:
-      name: Response
-      description: The raw text response from the BMS.
+  target:
+    device:
+      integration: pylontech_serial
