@@ -58,6 +58,18 @@
             "sys_power": {
                 "name": "Potència"
             },
+            "sys_cell_count": {
+                "name": "Nombre de Cel·les"
+            },
+            "sys_fw_version": {
+                "name": "Versió del Firmware"
+            },
+            "sys_spec": {
+                "name": "Especificació"
+            },
+            "sys_barcode": {
+                "name": "Codi de Barres"
+            },
             "sys_raw": {
                 "name": "Dades en Brut"
             },
@@ -97,6 +109,16 @@
             "bat_volt": {
                 "name": "Voltatge"
             }
+        }
+    },
+    "button": {
+        "sync_time": {
+            "name": "Sincronitzar Hora amb BMS"
+        }
+    },
+    "switch": {
+        "auto_sync_time": {
+            "name": "Sincronització Automàtica en Arrancar"
         }
     }
 }

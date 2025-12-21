@@ -15,6 +15,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
+# from .structs import PylontechSystem, PylontechBattery # Not strictly needed at runtime if we don't type hint heavily, but good for ref.
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -23,174 +24,126 @@ async def async_setup_entry(
 ) -> None:
     """Set up the sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    
     unique_id_prefix = entry.entry_id
-
     entities = []
     
     # --- System Sensors ---
     # Voltage
-    # --- System Sensors ---
-    # Voltage
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_volt", 
-        UnitOfElectricPotential.VOLT, SensorDeviceClass.VOLTAGE, "voltage"
+        UnitOfElectricPotential.VOLT, SensorDeviceClass.VOLTAGE, "voltage",
+        state_class=SensorStateClass.MEASUREMENT
     ))
     # Current
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_curr", 
-        UnitOfElectricCurrent.AMPERE, SensorDeviceClass.CURRENT, "current"
+        UnitOfElectricCurrent.AMPERE, SensorDeviceClass.CURRENT, "current",
+        state_class=SensorStateClass.MEASUREMENT
     ))
     # SOC
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_soc", 
-        PERCENTAGE, SensorDeviceClass.BATTERY, "soc"
+        PERCENTAGE, SensorDeviceClass.BATTERY, "soc",
+        state_class=SensorStateClass.MEASUREMENT
     ))
-    # Power (Required for dashboard optional graphs)
+    # Power
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_power", 
-        UnitOfPower.WATT, SensorDeviceClass.POWER, "power"
+        UnitOfPower.WATT, SensorDeviceClass.POWER, "power",
+        state_class=SensorStateClass.MEASUREMENT
     ))
-
-    # Energy In (Charge) - For Dashboard "Battery Charged"
+    # Energy In
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_energy_in", 
         UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY, "energy_in",
         state_class=SensorStateClass.TOTAL_INCREASING
     ))
-    
-    # Energy Out (Discharge) - For Dashboard "Battery Discharged"
+    # Energy Out
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_energy_out", 
         UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY, "energy_out",
         state_class=SensorStateClass.TOTAL_INCREASING
     ))
-
-    # Stored Energy (Capacity)
+    # Stored Energy
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_energy_stored", 
         UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY_STORAGE, "energy_stored",
         state_class=SensorStateClass.MEASUREMENT
     ))
-
-    # SOH (System Average)
+    # SOH (System)
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_soh", 
         PERCENTAGE, SensorDeviceClass.BATTERY, "soh",
         state_class=SensorStateClass.MEASUREMENT
     ))
-
-    # Cycle Count (System Average)
+    # Cycles (System)
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_cycles", 
         None, None, "cycles",
         state_class=SensorStateClass.MEASUREMENT
     ))
-
-    # Raw System Response
+    # Raw Data (System)
     entities.append(PylontechSystemSensor(
         coordinator, unique_id_prefix, "sys_raw", 
         None, None, "raw",
         entity_category=EntityCategory.DIAGNOSTIC
     ))
 
+    # Info Sensors (Diagnostic)
+    entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_cell_count", None, None, "cell_count", entity_category=EntityCategory.DIAGNOSTIC))
+    entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_fw_version", None, None, "fw_version", entity_category=EntityCategory.DIAGNOSTIC))
+    entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_spec", None, None, "spec", entity_category=EntityCategory.DIAGNOSTIC))
+    entities.append(PylontechSystemSensor(coordinator, unique_id_prefix, "sys_barcode", None, None, "barcode", entity_category=EntityCategory.DIAGNOSTIC))
 
 
     # --- Per Battery Sensors ---
-    if coordinator.data and "batteries" in coordinator.data:
-        for bat in coordinator.data["batteries"]:
-            bat_id = bat["id"]
-            # Voltage
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "volt", 
-                 UnitOfElectricPotential.VOLT, SensorDeviceClass.VOLTAGE, "voltage"
-            ))
-            # Current
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "curr", 
-                 UnitOfElectricCurrent.AMPERE, SensorDeviceClass.CURRENT, "current"
-            ))
-            # Temp
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "temp", 
-                 UnitOfTemperature.CELSIUS, SensorDeviceClass.TEMPERATURE, "temp"
-            ))
-            # SOC
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "soc", 
-                 PERCENTAGE, SensorDeviceClass.BATTERY, "soc"
-            ))
-            # SOH
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "soh", 
-                 PERCENTAGE, SensorDeviceClass.BATTERY, "soh"
-            ))
-            # Cycles
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "cycles", 
-                 None, None, "cycles"
-            ))
-            # Power
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "power", 
-                 UnitOfPower.WATT, SensorDeviceClass.POWER, "power"
-            ))
-            # Status (Text)
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "status", 
-                 None, None, "status"
-            ))
-            # Raw Response
-            entities.append(PylontechBatterySensor(
-                 coordinator, unique_id_prefix, bat_id, "raw", 
-                 None, None, "raw",
-                 entity_category=EntityCategory.DIAGNOSTIC
-            ))
+    # We iterate initially available batteries. If batteries increase dynamically, we need execution loop logic or reload.
+    # Standard practice: Iterate current data.
+    if coordinator.data and coordinator.data.batteries:
+        for bat in coordinator.data.batteries:
+            bat_id = bat.sys_id
+            
+            # Standard Sensors
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "volt", UnitOfElectricPotential.VOLT, SensorDeviceClass.VOLTAGE, "voltage"))
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "curr", UnitOfElectricCurrent.AMPERE, SensorDeviceClass.CURRENT, "current"))
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "temp", UnitOfTemperature.CELSIUS, SensorDeviceClass.TEMPERATURE, "temperature"))
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "soc", PERCENTAGE, SensorDeviceClass.BATTERY, "soc"))
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "power", UnitOfPower.WATT, SensorDeviceClass.POWER, "power"))
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "status", None, None, "status"))
+            
+            # Diagnostic
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "raw", None, None, "raw", entity_category=EntityCategory.DIAGNOSTIC))
 
     async_add_entities(entities)
 
 
 class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
     """Representation of a System-wide Sensor."""
-
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, unique_id_prefix, key, unit, device_class, json_key, state_class=None, entity_category=None):
+    def __init__(self, coordinator, unique_id_prefix, key, unit, device_class, attr_name, state_class=None, entity_category=None):
         super().__init__(coordinator)
-        self._key = key
+        self._attr_name = attr_name # field name in struct
         self._unit = unit
         self._device_class = device_class
-        self._json_key = json_key
         self._attr_state_class = state_class
         self._attr_entity_category = entity_category
         
         self._attr_unique_id = f"{unique_id_prefix}_{key}"
         self._attr_translation_key = key
         
-        # Default Info
-        dev_info = {
+        # Info
+        self._attr_device_info = {
             "identifiers": {(DOMAIN, "system")},
             "name": "Pylontech Stack",
             "manufacturer": "Pylontech",
-            "model": "US Series Stack",
+            "model": "US Series Stack", # Fallback, updated from data usually
         }
-        
-        # Enrich with fetched Info
-        if hasattr(coordinator, "device_info") and coordinator.device_info:
-             if "sw_version" in coordinator.device_info:
-                 dev_info["sw_version"] = coordinator.device_info["sw_version"]
-             if "model" in coordinator.device_info:
-                 dev_info["model"] = coordinator.device_info["model"]
-             # If we had a serial number, we could use it in identifiers, but sticking to (DOMAIN, "system") is safer for persistence
-
-        self._attr_device_info = dev_info
 
     @property
     def native_value(self):
-        """Return the state of the sensor."""
-        if not self.coordinator.data or "system" not in self.coordinator.data:
-            return None
-        return self.coordinator.data["system"].get(self._json_key)
+        if not self.coordinator.data: return None
+        return getattr(self.coordinator.data, self._attr_name, None)
 
     @property
     def native_unit_of_measurement(self):
@@ -199,40 +152,46 @@ class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
     @property
     def device_class(self):
         return self._device_class
+    
+    @property
+    def extra_state_attributes(self):
+        # Update device info dynamically if available in data
+        if self.coordinator.data and self.coordinator.data.model:
+             # This is a bit hacky, HA reads device_info mostly at setup.
+             # But we can try to return updated info via the registry if we wanted.
+             pass
+        return {}
+
 
 class PylontechBatterySensor(CoordinatorEntity, SensorEntity):
     """Representation of a Per-Battery Sensor."""
-
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, unique_id_prefix, bat_id, suffix, unit, device_class, json_key, entity_category=None):
+    def __init__(self, coordinator, unique_id_prefix, bat_id, suffix, unit, device_class, attr_name, entity_category=None):
         super().__init__(coordinator)
         self._bat_id = bat_id
-        self._json_key = json_key
+        self._attr_name = attr_name
         self._unit = unit
         self._device_class = device_class
+        self._attr_entity_category = entity_category
         
         self._attr_unique_id = f"{unique_id_prefix}_bat{bat_id}_{suffix}"
         self._attr_translation_key = f"bat_{suffix}"
-        self._attr_entity_category = entity_category
         
         self._attr_device_info = {
             "identifiers": {(DOMAIN, f"battery_{bat_id}")},
             "name": f"Pylontech Module {bat_id}",
             "manufacturer": "Pylontech",
-            "model": "US2000/3000",
+            "model": "US Module",
             "via_device": (DOMAIN, "system"),
         }
 
     @property
     def native_value(self):
-        """Return the state of the sensor."""
-        if not self.coordinator.data or "batteries" not in self.coordinator.data:
-            return None
-        # Find battery with matching ID
-        for b in self.coordinator.data["batteries"]:
-            if b["id"] == self._bat_id:
-                return b.get(self._json_key)
+        if not self.coordinator.data: return None
+        for b in self.coordinator.data.batteries:
+            if b.sys_id == self._bat_id:
+                return getattr(b, self._attr_name, None)
         return None
 
     @property

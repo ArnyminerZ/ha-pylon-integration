@@ -58,6 +58,18 @@
             "sys_power": {
                 "name": "Power"
             },
+            "sys_cell_count": {
+                "name": "Cell Count"
+            },
+            "sys_fw_version": {
+                "name": "Firmware Version"
+            },
+            "sys_spec": {
+                "name": "Specification"
+            },
+            "sys_barcode": {
+                "name": "Barcode"
+            },
             "sys_raw": {
                 "name": "Raw Data"
             },
@@ -97,6 +109,16 @@
             "bat_volt": {
                 "name": "Voltage"
             }
+        }
+    },
+    "button": {
+        "sync_time": {
+            "name": "Sync Time to BMS"
+        }
+    },
+    "switch": {
+        "auto_sync_time": {
+            "name": "Auto Sync Time on Boot"
         }
     }
 }

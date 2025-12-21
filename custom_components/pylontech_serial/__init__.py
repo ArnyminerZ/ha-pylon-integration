@@ -10,7 +10,7 @@ import voluptuous as vol
 from .const import DOMAIN, CONF_SERIAL_PORT, CONF_BAUD_RATE, CONF_POLL_INTERVAL, CONF_BATTERY_CAPACITY
 from .coordinator import PylontechCoordinator
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["sensor", "button", "switch"]
 
 _LOGGER = logging.getLogger(__name__)
 
