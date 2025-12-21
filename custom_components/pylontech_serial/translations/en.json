@@ -109,16 +109,16 @@
             "bat_volt": {
                 "name": "Voltage"
             }
-        }
-    },
-    "button": {
-        "sync_time": {
-            "name": "Sync Time to BMS"
-        }
-    },
-    "switch": {
-        "auto_sync_time": {
-            "name": "Auto Sync Time on Boot"
+        },
+        "button": {
+            "sync_time": {
+                "name": "Sync Time to BMS"
+            }
+        },
+        "switch": {
+            "auto_sync_time": {
+                "name": "Auto Sync Time on Boot"
+            }
         }
     }
 }

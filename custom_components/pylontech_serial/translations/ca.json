@@ -109,16 +109,16 @@
             "bat_volt": {
                 "name": "Voltatge"
             }
-        }
-    },
-    "button": {
-        "sync_time": {
-            "name": "Sincronitzar Hora amb BMS"
-        }
-    },
-    "switch": {
-        "auto_sync_time": {
-            "name": "Sincronització Automàtica en Arrancar"
+        },
+        "button": {
+            "sync_time": {
+                "name": "Sincronitzar Hora amb BMS"
+            }
+        },
+        "switch": {
+            "auto_sync_time": {
+                "name": "Sincronització Automàtica en Arrancar"
+            }
         }
     }
 }
