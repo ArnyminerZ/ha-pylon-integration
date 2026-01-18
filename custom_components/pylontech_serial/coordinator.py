@@ -181,9 +181,21 @@ class PylontechCoordinator(DataUpdateCoordinator):
 
                 return system
 
-            except Exception as e:
+            except serial.SerialException as e:
                 self._close_serial()
                 raise UpdateFailed(f"Serial Error: {e}")
+            except UpdateFailed:
+                # Logic error raised above, do not close serial
+                raise
+            except Exception as e:
+                # If we hit the FD limit, we must close
+                if "filedescriptor out of range" in str(e):
+                    self._close_serial()
+                    raise UpdateFailed(f"serial error: {e}")
+                
+                 # For other errors (parsing, etc), log but keep connection open
+                _LOGGER.error(f"Unexpected error updating data: {e}", exc_info=True)
+                raise UpdateFailed(f"Data update error: {e}")
 
     def _update_energy(self, system: PylontechSystem):
         now = datetime.now()
