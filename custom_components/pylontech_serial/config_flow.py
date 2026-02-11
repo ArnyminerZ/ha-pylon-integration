@@ -70,9 +70,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         errors = {}
         
         current_port = self.config_entry.options.get(CONF_SERIAL_PORT, self.config_entry.data.get(CONF_SERIAL_PORT))
-        current_baud = self.config_entry.options.get(CONF_BAUD_RATE, self.config_entry.data.get(CONF_BAUD_RATE))
-        current_poll = self.config_entry.options.get(CONF_POLL_INTERVAL, self.config_entry.data.get(CONF_POLL_INTERVAL))
-        current_cap = self.config_entry.options.get(CONF_BATTERY_CAPACITY, self.config_entry.data.get(CONF_BATTERY_CAPACITY))
+        current_baud = self.config_entry.options.get(CONF_BAUD_RATE, self.config_entry.data.get(CONF_BAUD_RATE, DEFAULT_BAUD_RATE))
+        current_poll = self.config_entry.options.get(CONF_POLL_INTERVAL, self.config_entry.data.get(CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL))
+        current_cap = self.config_entry.options.get(CONF_BATTERY_CAPACITY, self.config_entry.data.get(CONF_BATTERY_CAPACITY, DEFAULT_BATTERY_CAPACITY))
 
         if user_input is not None:
              return self.async_create_entry(title="", data=user_input)
@@ -83,11 +83,13 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             list_of_ports[port.device] = f"{port.device} - {port.description}"
         
         # Ensure current port is in list (even if not currently connected/detected, to avoid validation error if user doesn't want to change it but it's offline)
-        if current_port not in list_of_ports:
+        if current_port is not None and current_port not in list_of_ports:
             list_of_ports[current_port] = current_port
 
+        default_port = current_port if current_port is not None else vol.UNDEFINED
+
         schema = vol.Schema({
-            vol.Required(CONF_SERIAL_PORT, default=current_port): vol.In(list_of_ports),
+            vol.Required(CONF_SERIAL_PORT, default=default_port): vol.In(list_of_ports),
             vol.Required(CONF_BAUD_RATE, default=current_baud): int,
             vol.Required(CONF_POLL_INTERVAL, default=current_poll): int,
             vol.Required(CONF_BATTERY_CAPACITY, default=current_cap): float,
