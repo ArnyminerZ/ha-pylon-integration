@@ -8,6 +8,13 @@
             "unknown": "Unexpected error"
         },
         "step": {
+            "manual_path": {
+                "description": "Enter the path to your serial port manually.",
+                "title": "Manual Serial Port",
+                "data": {
+                    "serial_port": "Serial Port (e.g., /dev/ttyUSB0)"
+                }
+            },
             "user": {
                 "data": {
                     "baud_rate": "Baud Rate",
@@ -26,6 +33,13 @@
     },
     "options": {
         "step": {
+            "manual_path": {
+                "description": "Enter the path to your serial port manually.",
+                "title": "Manual Serial Port",
+                "data": {
+                    "serial_port": "Serial Port (e.g., /dev/ttyUSB0)"
+                }
+            },
             "user": {
                 "data": {
                     "baud_rate": "Baud Rate",

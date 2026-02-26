@@ -27,6 +27,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
+            if user_input[CONF_SERIAL_PORT] == "Enter Manually":
+                self.user_input = user_input
+                return await self.async_step_manual_path()
             return self.async_create_entry(title="Pylontech Battery", data=user_input)
 
         ports = await self.hass.async_add_executor_job(serial.tools.list_ports.comports)
@@ -36,7 +39,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if usb_device and usb_device not in list_of_ports:
             list_of_ports[usb_device] = usb_device
-
+            
+        list_of_ports["Enter Manually"] = "Enter Manually"
         default_port = usb_device if usb_device else vol.UNDEFINED
 
         schema = vol.Schema({
@@ -48,6 +52,19 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=schema, errors=errors
+        )
+
+    async def async_step_manual_path(self, user_input=None):
+        """Handle manual serial port entry."""
+        if user_input is not None:
+            self.user_input[CONF_SERIAL_PORT] = user_input[CONF_SERIAL_PORT]
+            return self.async_create_entry(title="Pylontech Battery", data=self.user_input)
+        
+        return self.async_show_form(
+            step_id="manual_path",
+            data_schema=vol.Schema({
+                vol.Required(CONF_SERIAL_PORT): str
+            })
         )
 
     @staticmethod
@@ -72,7 +89,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         current_cap = self.config_entry.options.get(CONF_BATTERY_CAPACITY, self.config_entry.data.get(CONF_BATTERY_CAPACITY, DEFAULT_BATTERY_CAPACITY))
 
         if user_input is not None:
-             return self.async_create_entry(title="", data=user_input)
+            if user_input[CONF_SERIAL_PORT] == "Enter Manually":
+                self.user_input = user_input
+                return await self.async_step_manual_path()
+            return self.async_create_entry(title="", data=user_input)
 
         ports = await self.hass.async_add_executor_job(serial.tools.list_ports.comports)
         list_of_ports = {}
@@ -82,6 +102,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         # Ensure current port is in list (even if not currently connected/detected, to avoid validation error if user doesn't want to change it but it's offline)
         if current_port is not None and current_port not in list_of_ports:
             list_of_ports[current_port] = current_port
+
+        list_of_ports["Enter Manually"] = "Enter Manually"
 
         default_port = current_port if current_port is not None else vol.UNDEFINED
 
@@ -93,3 +115,16 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         })
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
+
+    async def async_step_manual_path(self, user_input=None):
+        """Handle manual serial port entry."""
+        if user_input is not None:
+            self.user_input[CONF_SERIAL_PORT] = user_input[CONF_SERIAL_PORT]
+            return self.async_create_entry(title="", data=self.user_input)
+            
+        return self.async_show_form(
+            step_id="manual_path",
+            data_schema=vol.Schema({
+                 vol.Required(CONF_SERIAL_PORT, default=self.user_input.get(CONF_SERIAL_PORT, "")): str
+            })
+        )

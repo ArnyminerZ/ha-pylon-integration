@@ -8,6 +8,13 @@
             "unknown": "Error inesperat"
         },
         "step": {
+            "manual_path": {
+                "description": "Introdueix la ruta al port sèrie manualment.",
+                "title": "Port Sèrie Manual",
+                "data": {
+                    "serial_port": "Port Sèrie (ex. /dev/ttyUSB0)"
+                }
+            },
             "user": {
                 "data": {
                     "baud_rate": "Taxa de Baud",
@@ -26,6 +33,13 @@
     },
     "options": {
         "step": {
+            "manual_path": {
+                "description": "Introdueix la ruta al port sèrie manualment.",
+                "title": "Port Sèrie Manual",
+                "data": {
+                    "serial_port": "Port Sèrie (ex. /dev/ttyUSB0)"
+                }
+            },
             "user": {
                 "data": {
                     "baud_rate": "Taxa de Baud",
