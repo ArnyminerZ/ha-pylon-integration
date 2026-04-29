@@ -9,6 +9,10 @@ Connect your Pylontech US2000/US3000 battery stack directly to Home Assistant us
 - **Home Assistant Native**: No MQTT or Docker containers required.
 - **Energy Dashboard Ready**: Includes calculated Energy (kWh) sensors for proper dashboard Integration.
 - **Per-Battery Monitoring**: Voltage, Current, SOC, Temperature, and Status for each module.
+- **Per-Battery Configuration**: Individually tune the capacity of each battery module (Number entity) to accurately compute total stored energy.
+- **Diagnostics & Raw Data**: Track system health (SOH), cycle count, firmware version, and view raw serial responses for debugging.
+- **Time Synchronization**: Automatically or manually sync Home Assistant's time with your BMS internal clock.
+- **Custom Commands**: Send arbitrary raw serial commands directly to the BMS using the built-in Home Assistant service.
 
 > [!NOTE]
 > **USB Auto-Discovery**: Currently, **only** the Prolic PL2303 scanner (VID `067B`, PID `2303`) is supported for auto-discovery. If you have a different adapter, it will not be automatically detected, but you can still manually select the port during configuration.
@@ -42,8 +46,11 @@ Connect your Pylontech US2000/US3000 battery stack directly to Home Assistant us
 3. Click **+ ADD INTEGRATION** in the bottom right.
 4. Search for **Pylontech Serial**.
 5. Select your Serial Port from the list.
-6. Configure the Baud Rate (Default 115200) and Battery Capacity (Default 2.4 kWh per module) if needed.
+6. Configure the Baud Rate (Default 115200) and Poll Interval (Default 15 seconds) if needed.
 7. Click **Submit**.
+
+### Battery Capacity Configuration
+Instead of a global configuration, this integration provides a **Number Entity** for *each* detected battery module. Once the integration is added, navigate to the device page for each module to adjust its capacity (in kWh). This ensures that the integration accurately calculates the total stored energy across batteries of different sizes.
 
 ### Hardware Configuration
 Ensure your battery DIP switches are configured correctly for communication. For US2000/US3000, **all DIP switches OFF** selects the default baud rate of **115200**.
