@@ -1,5 +1,5 @@
 """Number platform for Pylontech Serial."""
-from homeassistant.components.number import NumberDeviceClass, RestoreNumber
+from homeassistant.components.number import NumberDeviceClass, RestoreNumber, NumberMode
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfEnergy, EntityCategory
 from homeassistant.core import HomeAssistant
@@ -41,6 +41,7 @@ class PylontechBatteryCapacityNumber(PylontechBatteryEntity, RestoreNumber):
         self._attr_native_min_value = 0.5
         self._attr_native_max_value = 10.0
         self._attr_native_step = 0.1
+        self._attr_mode = NumberMode.BOX
         
         self._attr_native_value = coordinator.default_capacity
 
