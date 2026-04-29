@@ -13,6 +13,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .entity import PylontechSystemEntity, PylontechBatteryEntity
 
 from .const import DOMAIN
 # from .structs import PylontechSystem, PylontechBattery # Not strictly needed at runtime if we don't type hint heavily, but good for ref.
@@ -119,9 +120,8 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
+class PylontechSystemSensor(PylontechSystemEntity, SensorEntity):
     """Representation of a System-wide Sensor."""
-    _attr_has_entity_name = True
 
     def __init__(self, coordinator, unique_id_prefix, key, unit, device_class, attr_name, state_class=None, entity_category=None):
         super().__init__(coordinator)
@@ -133,14 +133,6 @@ class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
         
         self._attr_unique_id = f"{unique_id_prefix}_{key}"
         self._attr_translation_key = key
-        
-        # Info
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, "system")},
-            "name": "Pylontech Stack",
-            "manufacturer": "Pylontech",
-            "model": "US Series Stack", # Fallback, updated from data usually
-        }
 
     @property
     def native_value(self):
@@ -165,13 +157,11 @@ class PylontechSystemSensor(CoordinatorEntity, SensorEntity):
         return {}
 
 
-class PylontechBatterySensor(CoordinatorEntity, SensorEntity):
+class PylontechBatterySensor(PylontechBatteryEntity, SensorEntity):
     """Representation of a Per-Battery Sensor."""
-    _attr_has_entity_name = True
 
     def __init__(self, coordinator, unique_id_prefix, bat_id, suffix, unit, device_class, attr_name, entity_category=None):
-        super().__init__(coordinator)
-        self._bat_id = bat_id
+        super().__init__(coordinator, bat_id)
         self._attribute_key = attr_name
         self._unit = unit
         self._device_class = device_class
@@ -179,14 +169,6 @@ class PylontechBatterySensor(CoordinatorEntity, SensorEntity):
         
         self._attr_unique_id = f"{unique_id_prefix}_bat{bat_id}_{suffix}"
         self._attr_translation_key = f"bat_{suffix}"
-        
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, f"battery_{bat_id}")},
-            "name": f"Pylontech Module {bat_id}",
-            "manufacturer": "Pylontech",
-            "model": "US Module",
-            "via_device": (DOMAIN, "system"),
-        }
 
     @property
     def native_value(self):

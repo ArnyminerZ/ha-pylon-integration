@@ -4,7 +4,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfEnergy, EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .entity import PylontechBatteryEntity
 
 from .const import DOMAIN
 
@@ -26,13 +26,11 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class PylontechBatteryCapacityNumber(CoordinatorEntity, RestoreNumber):
+class PylontechBatteryCapacityNumber(PylontechBatteryEntity, RestoreNumber):
     """Representation of a Per-Battery Capacity Number."""
-    _attr_has_entity_name = True
 
     def __init__(self, coordinator, unique_id_prefix, bat_id):
-        super().__init__(coordinator)
-        self._bat_id = bat_id
+        super().__init__(coordinator, bat_id)
         
         self._attr_unique_id = f"{unique_id_prefix}_bat{bat_id}_capacity"
         self._attr_translation_key = "battery_capacity"
@@ -45,14 +43,6 @@ class PylontechBatteryCapacityNumber(CoordinatorEntity, RestoreNumber):
         self._attr_native_step = 0.1
         
         self._attr_native_value = coordinator.default_capacity
-
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, f"battery_{bat_id}")},
-            "name": f"Pylontech Module {bat_id}",
-            "manufacturer": "Pylontech",
-            "model": "US Module",
-            "via_device": (DOMAIN, "system"),
-        }
 
     async def async_added_to_hass(self) -> None:
         """Handle entity which will be added."""

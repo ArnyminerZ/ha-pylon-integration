@@ -3,7 +3,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .entity import PylontechSystemEntity
 
 from .const import DOMAIN
 from .coordinator import PylontechCoordinator
@@ -18,21 +18,14 @@ async def async_setup_entry(
     
     async_add_entities([PylontechAutoSyncSwitch(coordinator, entry.entry_id)])
 
-class PylontechAutoSyncSwitch(CoordinatorEntity, SwitchEntity, RestoreEntity):
+class PylontechAutoSyncSwitch(PylontechSystemEntity, SwitchEntity, RestoreEntity):
     """Switch to enable auto time sync on boot."""
-
-    _attr_has_entity_name = True
     _attr_translation_key = "auto_sync_time"
 
     def __init__(self, coordinator, unique_id_prefix):
         super().__init__(coordinator)
         self._attr_unique_id = f"{unique_id_prefix}_auto_sync"
         self._attr_is_on = False # Default off
-        self._attr_device_info = {
-            "identifiers": {(DOMAIN, "system")},
-            "name": "Pylontech Stack",
-            "manufacturer": "Pylontech",
-        }
 
     async def async_added_to_hass(self) -> None:
         """Restore last state."""
