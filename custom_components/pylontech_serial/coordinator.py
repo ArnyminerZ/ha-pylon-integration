@@ -16,11 +16,12 @@ _LOGGER = logging.getLogger(__name__)
 class PylontechCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the Pylontech battery."""
 
-    def __init__(self, hass: HomeAssistant, port, baud_rate, poll_interval, battery_capacity):
+    def __init__(self, hass: HomeAssistant, port, baud_rate, poll_interval, default_capacity):
         """Initialize."""
         self.port = port
         self.baud_rate = baud_rate
-        self.battery_capacity = battery_capacity
+        self.default_capacity = default_capacity
+        self.battery_capacities = {}
         self.serial = None
         self._lock = threading.Lock()
         
@@ -174,10 +175,14 @@ class PylontechCoordinator(DataUpdateCoordinator):
                 self._update_energy(system)
                 
                 # Update Energy Stored
-                # Formula: Count * Cap * SOC%
-                count = len(system.batteries)
-                if count > 0:
-                    system.energy_stored = round(count * self.battery_capacity * (system.soc / 100.0), 3)
+                system.energy_stored = 0.0
+                for bat in system.batteries:
+                    cap = self.battery_capacities.get(bat.sys_id, self.default_capacity)
+                    bat_energy = cap * (bat.soc / 100.0)
+                    bat.energy_stored = round(bat_energy, 3)
+                    system.energy_stored += bat_energy
+                
+                system.energy_stored = round(system.energy_stored, 3)
 
                 return system
 
@@ -235,3 +240,7 @@ class PylontechCoordinator(DataUpdateCoordinator):
 
     def set_auto_sync(self, enabled: bool):
         self.auto_sync_time = enabled
+
+    def set_battery_capacity(self, bat_id: int, capacity: float):
+        """Set the configured capacity for a specific battery."""
+        self.battery_capacities[bat_id] = capacity

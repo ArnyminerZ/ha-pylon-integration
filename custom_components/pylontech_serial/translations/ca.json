@@ -18,7 +18,6 @@
             "user": {
                 "data": {
                     "baud_rate": "Taxa de Baud",
-                    "battery_capacity": "Capacitat de la Bateria per Mòdul (kWh)",
                     "poll_interval": "Interval d'actualització (segons)",
                     "serial_port": "Port Sèrie"
                 },
@@ -43,7 +42,6 @@
             "user": {
                 "data": {
                     "baud_rate": "Taxa de Baud",
-                    "battery_capacity": "Capacitat de la Bateria per Mòdul (kWh)",
                     "poll_interval": "Interval d'actualització (segons)",
                     "serial_port": "Port Sèrie"
                 },
@@ -102,6 +100,9 @@
             "bat_cycles": {
                 "name": "Cicles"
             },
+            "bat_energy_stored": {
+                "name": "Energia Emmagatzemada"
+            },
             "bat_curr": {
                 "name": "Corrent"
             },
@@ -135,6 +136,11 @@
         "switch": {
             "auto_sync_time": {
                 "name": "Sincronització Automàtica en Arrancar"
+            }
+        },
+        "number": {
+            "battery_capacity": {
+                "name": "Capacitat"
             }
         }
     }

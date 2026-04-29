@@ -110,6 +110,7 @@ async def async_setup_entry(
             entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "temp", UnitOfTemperature.CELSIUS, SensorDeviceClass.TEMPERATURE, "temperature"))
             entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "soc", PERCENTAGE, SensorDeviceClass.BATTERY, "soc"))
             entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "power", UnitOfPower.WATT, SensorDeviceClass.POWER, "power"))
+            entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "energy_stored", UnitOfEnergy.KILO_WATT_HOUR, SensorDeviceClass.ENERGY_STORAGE, "energy_stored"))
             entities.append(PylontechBatterySensor(coordinator, unique_id_prefix, bat_id, "status", None, None, "status"))
             
             # Diagnostic

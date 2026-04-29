@@ -47,7 +47,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             vol.Required(CONF_SERIAL_PORT, default=default_port): vol.In(list_of_ports),
             vol.Required(CONF_BAUD_RATE, default=DEFAULT_BAUD_RATE): int,
             vol.Required(CONF_POLL_INTERVAL, default=DEFAULT_POLL_INTERVAL): int,
-            vol.Required(CONF_BATTERY_CAPACITY, default=DEFAULT_BATTERY_CAPACITY): float,
         })
 
         return self.async_show_form(
@@ -86,7 +85,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         current_port = self.config_entry.options.get(CONF_SERIAL_PORT, self.config_entry.data.get(CONF_SERIAL_PORT))
         current_baud = self.config_entry.options.get(CONF_BAUD_RATE, self.config_entry.data.get(CONF_BAUD_RATE, DEFAULT_BAUD_RATE))
         current_poll = self.config_entry.options.get(CONF_POLL_INTERVAL, self.config_entry.data.get(CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL))
-        current_cap = self.config_entry.options.get(CONF_BATTERY_CAPACITY, self.config_entry.data.get(CONF_BATTERY_CAPACITY, DEFAULT_BATTERY_CAPACITY))
 
         if user_input is not None:
             if user_input[CONF_SERIAL_PORT] == "Enter Manually":
@@ -111,7 +109,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             vol.Required(CONF_SERIAL_PORT, default=default_port): vol.In(list_of_ports),
             vol.Required(CONF_BAUD_RATE, default=current_baud): int,
             vol.Required(CONF_POLL_INTERVAL, default=current_poll): int,
-            vol.Required(CONF_BATTERY_CAPACITY, default=current_cap): float,
         })
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)

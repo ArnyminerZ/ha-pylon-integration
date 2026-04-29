@@ -10,6 +10,7 @@ class PylontechBattery:
     soc: int
     status: str
     power: float
+    energy_stored: float = 0.0
     raw: str
     # Removed soh/cycles as requested per battery
 

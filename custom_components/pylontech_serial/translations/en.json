@@ -18,7 +18,6 @@
             "user": {
                 "data": {
                     "baud_rate": "Baud Rate",
-                    "battery_capacity": "Battery Capacity per Module (kWh)",
                     "poll_interval": "Poll Interval (seconds)",
                     "serial_port": "Serial Port"
                 },
@@ -43,7 +42,6 @@
             "user": {
                 "data": {
                     "baud_rate": "Baud Rate",
-                    "battery_capacity": "Battery Capacity per Module (kWh)",
                     "poll_interval": "Poll Interval (seconds)",
                     "serial_port": "Serial Port"
                 },
@@ -102,6 +100,9 @@
             "bat_cycles": {
                 "name": "Cycles"
             },
+            "bat_energy_stored": {
+                "name": "Stored Energy"
+            },
             "bat_curr": {
                 "name": "Current"
             },
@@ -135,6 +136,11 @@
         "switch": {
             "auto_sync_time": {
                 "name": "Auto Sync Time on Boot"
+            }
+        },
+        "number": {
+            "battery_capacity": {
+                "name": "Capacity"
             }
         }
     }
