@@ -47,9 +47,12 @@ class PylontechCoordinator(DataUpdateCoordinator):
              self.serial.open()
 
     def _close_serial(self):
-        if self.serial and self.serial.is_open:
-            self.serial.close()
-            self.serial = None
+        if self.serial:
+            try:
+                if self.serial.is_open:
+                    self.serial.close()
+            finally:
+                self.serial = None
 
     async def _async_update_data(self):
         """Fetch data from the device."""
@@ -68,16 +71,20 @@ class PylontechCoordinator(DataUpdateCoordinator):
         with self._lock:
             try:
                 self._open_serial()
-                self.serial.reset_read_buffer()
-                self.serial.write(b"\n")
+                ser = self.serial
+                if ser is None:
+                    raise UpdateFailed("Could not open serial port")
+
+                ser.reset_read_buffer()
+                ser.write(b"\n")
                 time.sleep(0.1)
-                self.serial.readall()
+                ser.readall()
 
                 _LOGGER.debug("Sending 'info' command")
-                self.serial.write(b"info\n")
+                ser.write(b"info\n")
                 time.sleep(1.0)
                 
-                raw_data = self.serial.readall().decode('ascii', errors='ignore')
+                raw_data = ser.readall().decode('ascii', errors='ignore')
                 
                 # Initialize system if needed, or use a temp one
                 # We store persistent data in self.data later, but here we can just parse into a temp object 
@@ -100,43 +107,49 @@ class PylontechCoordinator(DataUpdateCoordinator):
 
             except Exception as e:
                 _LOGGER.warning(f"Failed to fetch device info: {e}")
+            finally:
+                # Always release the port so other processes/integrations can use it.
+                self._close_serial()
 
     def _read_full_data(self):
         """Read data from serial synchronously."""
         with self._lock:
             try:
                 self._open_serial()
+                ser = self.serial
+                if ser is None:
+                    raise UpdateFailed("Could not open serial port")
                 
-                self.serial.reset_read_buffer()
-                self.serial.write(b"\n")
+                ser.reset_read_buffer()
+                ser.write(b"\n")
                 time.sleep(0.1)
-                self.serial.readall()
+                ser.readall()
 
                 # 1. PWR
                 _LOGGER.debug("Sending 'pwr' command")
-                self.serial.write(b"pwr\n")
+                ser.write(b"pwr\n")
                 time.sleep(1.0)
-                raw_data_pwr = self.serial.readall().decode('ascii', errors='ignore')
+                raw_data_pwr = ser.readall().decode('ascii', errors='ignore')
                 
                 if "Power Volt" not in raw_data_pwr:
                     # Retry once
                     time.sleep(1.0)
-                    raw_data_pwr = self.serial.readall().decode('ascii', errors='ignore')
+                    raw_data_pwr = ser.readall().decode('ascii', errors='ignore')
 
                 if "Power Volt" not in raw_data_pwr:
                      raise UpdateFailed("Did not receive valid 'pwr' response.")
 
                 # 2. STAT
                 _LOGGER.debug("Sending 'stat' command")
-                self.serial.write(b"stat\n")
+                ser.write(b"stat\n")
                 time.sleep(1.0)
-                raw_data_stat = self.serial.readall().decode('ascii', errors='ignore')
+                raw_data_stat = ser.readall().decode('ascii', errors='ignore')
 
                 # 3. TIME
                 _LOGGER.debug("Sending 'time' command")
-                self.serial.write(b"time\n")
+                ser.write(b"time\n")
                 time.sleep(0.5)
-                raw_data_time = self.serial.readall().decode('ascii', errors='ignore')
+                raw_data_time = ser.readall().decode('ascii', errors='ignore')
 
                 # Prepare System Object
                 # Reuse existing if possible to keep energy counters? 
@@ -201,6 +214,9 @@ class PylontechCoordinator(DataUpdateCoordinator):
                  # For other errors (parsing, etc), log but keep connection open
                 _LOGGER.error(f"Unexpected error updating data: {e}", exc_info=True)
                 raise UpdateFailed(f"Data update error: {e}")
+            finally:
+                # Keep each polling cycle self-contained to avoid serial collisions.
+                self._close_serial()
 
     def _update_energy(self, system: PylontechSystem):
         now = datetime.now()
@@ -221,16 +237,27 @@ class PylontechCoordinator(DataUpdateCoordinator):
         with self._lock:
             try:
                 self._open_serial()
-                self.serial.reset_read_buffer()
-                self.serial.write(b"\n")
+                ser = self.serial
+                if ser is None:
+                    raise UpdateFailed("Could not open serial port")
+
+                ser.reset_read_buffer()
+                ser.write(b"\n")
                 
                 cmd_bytes = command.encode("ascii") + b"\n"
-                self.serial.write(cmd_bytes)
+                ser.write(cmd_bytes)
                 time.sleep(0.5)
-                return self.serial.readall().decode('ascii', errors='ignore')
+                return ser.readall().decode('ascii', errors='ignore')
             except Exception as e:
                 _LOGGER.error(f"Error sending raw command: {e}")
                 raise e
+            finally:
+                self._close_serial()
+
+    def shutdown(self):
+        """Release any resources held by the coordinator."""
+        with self._lock:
+            self._close_serial()
 
     def sync_time(self):
         """Syncs the BMS time with HA time."""
