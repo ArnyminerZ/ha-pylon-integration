@@ -43,6 +43,7 @@ class PylontechCoordinator(DataUpdateCoordinator):
         if self.serial is None:
             _LOGGER.debug(f"Opening serial port {self.port} at {self.baud_rate}")
             self.serial = serialx.serial_for_url(self.port, baudrate=self.baud_rate, read_timeout=2)
+            self.serial.open()
         elif not self.serial.is_open:
              self.serial.open()
 
