@@ -1,6 +1,7 @@
 {
   "domain": "pylontech_serial",
   "name": "Pylontech Serial",
+  "categories": ["energy.solar_batteries"],
   "codeowners": [],
   "config_flow": true,
   "dependencies": [
