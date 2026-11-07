@@ -36,11 +36,16 @@ class PylontechParser:
                     voltage = int(parts[1]) / 1000.0
                     current = int(parts[2]) / 1000.0
                     temp = int(parts[3]) / 1000.0
-                    # Status is at index 8 (Base.St)
-                    status = parts[8]
-                    # SOC is at index 12 (Coulomb) - usually ends with %
-                    soc = int(parts[12].replace('%', ''))
-                    
+                    # Coulomb (SOC) is the only token ending in '%'. Base.St is always
+                    # 4 columns before it, regardless of firmware (older format:
+                    # indexes 8/12, newer format with extra *.Id columns: 12/16).
+                    soc_idx = next((i for i, p in enumerate(parts) if p.endswith('%')), None)
+                    if soc_idx is None or soc_idx < 4:
+                        raise ValueError("Coulomb (%) column not found")
+
+                    soc = int(parts[soc_idx].rstrip('%'))
+                    status = parts[soc_idx - 4]
+
                     power = round(voltage * current, 2)
                     
                     bat = PylontechBattery(
