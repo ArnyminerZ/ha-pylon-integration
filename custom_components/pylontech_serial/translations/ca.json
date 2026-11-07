@@ -4,17 +4,10 @@
             "already_configured": "El dispositiu ja està configurat"
         },
         "error": {
-            "cannot_connect": "No s'ha pogut connectar",
+            "cannot_connect": "No s'ha pogut connectar amb la bateria. Comprova el port i la taxa de baud.",
             "unknown": "Error inesperat"
         },
         "step": {
-            "manual_path": {
-                "description": "Introdueix la ruta al port sèrie manualment.",
-                "title": "Port Sèrie Manual",
-                "data": {
-                    "serial_port": "Port Sèrie (ex. /dev/ttyUSB0)"
-                }
-            },
             "user": {
                 "data": {
                     "baud_rate": "Taxa de Baud",
@@ -24,22 +17,16 @@
                 "description": "Configura la connexió sèrie amb el teu conjunt de bateries Pylontech.",
                 "title": "Pylontech Sèrie"
             },
-            "usb": {
-                "description": "S'ha descobert un dispositiu Pylontech Sèrie.",
-                "title": "Descobriment Pylontech Sèrie"
+            "usb_confirm": {
+                "title": "Descobriment Pylontech Sèrie",
+                "description": "Vols configurar la bateria Pylontech trobada a {device}?"
             }
-        }
+        },
+        "flow_title": "{name}"
     },
     "options": {
         "step": {
-            "manual_path": {
-                "description": "Introdueix la ruta al port sèrie manualment.",
-                "title": "Port Sèrie Manual",
-                "data": {
-                    "serial_port": "Port Sèrie (ex. /dev/ttyUSB0)"
-                }
-            },
-            "user": {
+            "init": {
                 "data": {
                     "baud_rate": "Taxa de Baud",
                     "poll_interval": "Interval d'actualització (segons)",
@@ -48,6 +35,10 @@
                 "description": "Actualitza la configuració per a Pylontech Sèrie.",
                 "title": "Configura Pylontech Sèrie"
             }
+        },
+        "error": {
+            "cannot_connect": "No s'ha pogut connectar amb la bateria. Comprova el port i la taxa de baud.",
+            "unknown": "Error inesperat"
         }
     },
     "entity": {
