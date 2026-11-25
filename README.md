@@ -1,6 +1,8 @@
 # Pylontech Serial Integration for Home Assistant
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
+[![Open Marketplace Repository on My HA](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ArnyminerZ&repository=ha-pylon-integration&category=integration)
+[![Add Integration to My HA](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=pylontech_serial)
 
 Connect your Pylontech US2000/US3000 battery stack directly to Home Assistant using a USB-to-RS232/RS485 cable.
 
@@ -31,15 +33,22 @@ Connect your Pylontech US2000/US3000 battery stack directly to Home Assistant us
 
 ## Installation
 
-### Via HACS (Recommended)
+### Via the Marketplace (Recommended)
 
-1.  Ensure you have [HACS](https://hacs.xyz/) installed.
-2.  Go to **HACS > Integrations**.
+Starting with Home Assistant **2026.11**, HACS is called the **Marketplace**.
+
+[![Open Marketplace Repository on My HA](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ArnyminerZ&repository=ha-pylon-integration&category=integration)
+
+1.  Ensure you have the [Marketplace](https://hacs.xyz/) (HACS) installed.
+2.  Go to **Marketplace > Integrations**.
 3.  Click the **3 dots** (top right) > **Custom repositories**.
 4.  Add the URL of this repository.
 5.  Category: **Integration**.
 6.  Click **Add**, then find and install **Pylontech Serial**.
 7.  Restart Home Assistant.
+
+> [!NOTE]
+> **Home Assistant earlier than 2026.11:** the Marketplace is named **HACS** there. Follow the same steps, using **HACS > Integrations** in step 2.
 
 ### Manual Installation
 
@@ -50,6 +59,8 @@ Connect your Pylontech US2000/US3000 battery stack directly to Home Assistant us
 4. **Restart Home Assistant**: This is crucial for HA to recognize the new component.
 
 ## Configuration
+
+[![Add Integration to My HA](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=pylontech_serial)
 
 1. Connect your Pylontech battery to the machine running Home Assistant via USB.
 2. In Home Assistant, go to **Settings** > **Devices & Services**.
