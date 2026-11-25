@@ -1,6 +1,5 @@
 # Pylontech Serial Integration for Home Assistant
 
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
 [![Open Marketplace Repository on My HA](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ArnyminerZ&repository=ha-pylon-integration&category=integration)
 [![Add Integration to My HA](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=pylontech_serial)
 
